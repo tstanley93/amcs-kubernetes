@@ -4,7 +4,7 @@ metadata:
   name: nginx-service
 spec:
   externalIPs:
-  - 10.10.2.24
+  - 10.10.2.6
   ports:
   - port: 80
     name: http
