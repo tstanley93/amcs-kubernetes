@@ -45,7 +45,7 @@ spec:
         runAsUser: 0
       containers:
       - name: cloudify-512
-        image: cloudifyplatform/premium-cloudify-manager-aio:5.1.2
+        image: cloudifyplatform/premium-cloudify-manager-worker:5.1.2
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: sys-fs-cgroup
