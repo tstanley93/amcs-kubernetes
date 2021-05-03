@@ -1,0 +1,39 @@
+source /home/topduck/Demos/openstack/seattle/k8s-openrc.sh
+export KOPS_STATE_STORE=swift://k8s-store
+export OS_DOMAIN_ID=default
+
+# to see your etcd storage type
+openstack volume type list
+
+# coreos (the default) + flannel overlay cluster in Default
+kops create cluster \
+  --cloud openstack \
+  --name splab-k8s.k8s.local \
+  --state ${KOPS_STATE_STORE} \
+  --zones regular \
+  --network-cidr 10.0.0.0/24 \
+  --image CentOS-7-x86_64-GenericCloud-2009 \
+  --master-count=3 \
+  --node-count=1 \
+  --node-size m1.xlarge \
+  --master-size m1.large \
+  --etcd-storage-type tripleo \
+  --api-loadbalancer-type "" \
+  --topology private \
+  --ssh-public-key ~/Keys/Boulder_F5/stanley01.pub \
+  --networking weave \
+  --os-ext-net public
+
+# to update a cluster
+kops update cluster splab-k8s.k8s.local --state ${KOPS_STATE_STORE} --yes
+
+# to delete a cluster
+kops delete cluster splab-k8s.k8s.local --yes
+
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster splab-k8s.k8s.local
+ * edit your node instance group: kops edit ig --name=splab-k8s.k8s.local nodes-regular
+ * edit your master instance group: kops edit ig --name=splab-k8s.k8s.local master-regular-1
+
+Finally configure your cluster with: kops update cluster --name splab-k8s.k8s.local --yes --admin

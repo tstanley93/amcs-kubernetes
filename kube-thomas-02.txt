@@ -1,0 +1,62 @@
+source /home/topduck/Demos/openstack/seattle/stanley-openrc.sh
+
+### Create Servers
+
+openstack server create \
+--key-name stanley01 \
+--image "	k8s-image-01" \
+--flavor m1.large \
+--network mgmt_ts \
+k8s-master-01
+
+openstack server create \
+--key-name stanley01 \
+--image "	k8s-image-01" \
+--flavor m1.xlarge \
+--network mgmt_ts \
+k8s-node-01
+
+openstack server add floating ip k8s-master-01 10.144.184.83
+
+MTU=1450
+ONBOOT=yes
+STARTMODE=auto
+TYPE=Ethernet
+DEFROUTE=no
+IPADDR=10.10.6.11
+NETMASK=255.255.254.0
+NAME=eth1
+HWADDR=fa:16:3e:bc:e7:6f
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 10.10.2.17:6443 --token ltixpr.i4e9dpmb0b7lad0g --discovery-token-ca-cert-hash sha256:d1557c928ec45eeebe943815910ae392055f2b825e5407d6d0853be9c28a2aa2
+
+
+cat <<EOF>> /etc/hosts
+10.10.6.11 k8s-master-01
+10.10.6.4 k8s-node-01 worker-node-01
+10.10.6.31 k8s-node-02 worker-node-02
+EOF
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6IlJ0eVdYeVY3TkFJdmUzNTdfZFZPQV9qTFFwZDRLS3ZYaUhoWkhoTTZGZlEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXpydGY2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI5NjVkZjUwNS1kNDQ5LTQ0ZDktOTIwOC03N2ViOThkY2EwYTAiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.riQ6LEMld4kzdCePXhpRSS7nJDpuRDA1eEiKO2A8nTjC0T_-1FajHfCqXkUL_PXLbe20eOIERpD2A4mEdCJQ20OndgVMvSnmZfnGe_RojGjATa7GJa1b0fyTlFvVsEEB7ZSftORaTKLY9t40NrOnj_WsGVToBKx3J3nrYwxRFUiUovSM_HjXG_OALF4zm5c7Px2pBxQ_O3ZY7nI2dhhydZ5IVfB4gFPsADRXVLAaPgtPXMRxN8VacnTA_FNxolaoEQZnulys_187bbnvacnnHZeIUNjX6QML9TbiyKmv2svZHFL1uQ4jmcWj3Pa3P2KRLlZSGDuP0e5Tmtrb3grNJw
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/alternative.yaml
+

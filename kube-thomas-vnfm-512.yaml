@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudify-service
+spec:
+  type: NodePort
+  externalIPs:
+  - 10.10.2.24
+  ports:
+  - port: 80
+    name: http
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30007
+  selector:
+    app: cloudify
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudify-deployment
+  labels:
+    app: cloudify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudify
+  template:
+    metadata:
+      labels:
+        app: cloudify
+    spec:
+      volumes:
+      - name: sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+      - name: run
+        hostPath:
+          path: /var/run/dbus
+      - name: run-lock
+        hostPath:
+          path: /var/run/lock
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: cloudify-512
+        image: cloudifyplatform/premium-cloudify-manager-aio:5.1.2
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: sys-fs-cgroup
+        - mountPath: /var/run/dbus
+          name: run
+        - mountPath: /var/run/lock
+          name: run-lock
+        securityContext:
+          allowPrivilegeEscalation: true
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        hostname: k8s-node-01
