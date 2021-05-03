@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: nginx-service
 spec:
-  type: NodePort
   externalIPs:
   - 10.10.2.24
   ports:
@@ -11,7 +10,6 @@ spec:
     name: http
     protocol: TCP
     targetPort: 80
-    nodePort: 30007
   selector:
     app: nginx
 ---
