@@ -29,11 +29,18 @@ spec:
       labels:
         app: cloudify
     spec:
+      volumes:
+      - name: sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
       securityContext:
         runAsUser: 0
       containers:
       - name: cloudify-512
         image: cloudifyplatform/premium-cloudify-manager-aio:5.1.2
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: sys-fs-cgroup
         securityContext:
           allowPrivilegeEscalation: true
         ports:
