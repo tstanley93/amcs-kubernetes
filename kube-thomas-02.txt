@@ -14,7 +14,7 @@ openstack server create \
 --image "	k8s-image-01" \
 --flavor m1.xlarge \
 --network mgmt_ts \
-k8s-node-01
+k8s-node-03
 
 openstack server add floating ip k8s-master-01 10.144.184.83
 
@@ -23,8 +23,11 @@ ONBOOT=yes
 STARTMODE=auto
 TYPE=Ethernet
 DEFROUTE=no
-IPADDR=10.10.6.11
-NETMASK=255.255.254.0
+IPADDR=10.10.2.7
+NETMASK=255.255.255.0
+GATEWAY=10.10.2.1
+DNS1=172.27.1.1
+DNS2=172.27.2.1
 NAME=eth1
 HWADDR=fa:16:3e:bc:e7:6f
 
@@ -49,14 +52,22 @@ Then you can join any number of worker nodes by running the following on each as
 kubeadm join 10.10.2.17:6443 --token ltixpr.i4e9dpmb0b7lad0g --discovery-token-ca-cert-hash sha256:d1557c928ec45eeebe943815910ae392055f2b825e5407d6d0853be9c28a2aa2
 
 
-cat <<EOF>> /etc/hosts
-10.10.6.11 k8s-master-01
-10.10.6.4 k8s-node-01 worker-node-01
-10.10.6.31 k8s-node-02 worker-node-02
-EOF
+echo "10.10.2.17 k8s-master-01" | tee -a /etc/hosts
+echo "10.10.2.24 k8s-node-01" | tee -a /etc/hosts
+echo "10.10.2.37 k8s-node-02" | tee -a /etc/hosts
+echo "10.10.2.10 k8s-node-03" | tee -a /etc/hosts
+echo "10.10.2.15 k8s-node-04" | tee -a /etc/hosts
 
 eyJhbGciOiJSUzI1NiIsImtpZCI6IlJ0eVdYeVY3TkFJdmUzNTdfZFZPQV9qTFFwZDRLS3ZYaUhoWkhoTTZGZlEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXpydGY2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI5NjVkZjUwNS1kNDQ5LTQ0ZDktOTIwOC03N2ViOThkY2EwYTAiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.riQ6LEMld4kzdCePXhpRSS7nJDpuRDA1eEiKO2A8nTjC0T_-1FajHfCqXkUL_PXLbe20eOIERpD2A4mEdCJQ20OndgVMvSnmZfnGe_RojGjATa7GJa1b0fyTlFvVsEEB7ZSftORaTKLY9t40NrOnj_WsGVToBKx3J3nrYwxRFUiUovSM_HjXG_OALF4zm5c7Px2pBxQ_O3ZY7nI2dhhydZ5IVfB4gFPsADRXVLAaPgtPXMRxN8VacnTA_FNxolaoEQZnulys_187bbnvacnnHZeIUNjX6QML9TbiyKmv2svZHFL1uQ4jmcWj3Pa3P2KRLlZSGDuP0e5Tmtrb3grNJw
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/alternative.yaml
+
+Kube Nodes:
+
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+kubeadm join 10.10.2.17:6443 --token su1b2i.ze8suczbjvue24zt --discovery-token-ca-cert-hash sha256:d1557c928ec45eeebe943815910ae392055f2b825e5407d6d0853be9c28a2aa2
+kubeadm token create  ##  Use this command on master to generate a new token for above command ... 
 

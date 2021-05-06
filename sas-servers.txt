@@ -1,0 +1,36 @@
+openstack server create \
+--key-name stanley01 \
+--image "CentOS-7-x86_64-GenericCloud-2009" \
+--flavor sas.xxxlarge \
+--availability-zone regular \
+--network mgmt_ts \
+--network pgw_ex \
+--wait \
+sas-viya-01
+
+openstack flavor create \
+--ram 32768 \
+--disk 100 \
+--vcpus 8 \
+sas.xxlarge
+
+openstack server create \
+--key-name stanley01 \
+--image "CentOS-7-x86_64-GenericCloud-2009" \
+--flavor sas.xxlarge \
+--availability-zone regular \
+--network mgmt_ts \
+--network pgw_ex \
+--wait \
+sas-viya-04
+
+k8s Nodes
+openstack server create \
+--key-name stanley01 \
+--image "k8s-image-01" \
+--flavor sas.xxlarge \
+--availability-zone regular \
+--network mgmt_ts \
+--network pgw_ex \
+--wait \
+k8s-node-03
