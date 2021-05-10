@@ -14,6 +14,22 @@ openstack flavor create \
 --vcpus 8 \
 sas.xxlarge
 
+openstack flavor create \
+--ram 16384 \
+--disk 100 \
+--vcpus 8 \
+sas.xlarge
+
+openstack flavor create \
+--ram 24576 \
+--disk 100 \
+--vcpus 16 \
+sas.xxlarge.sriov
+
+openstack flavor set \
+--property aggregate_instance_extra_specs:sriov=true \
+sas.xxlarge.sriov
+
 openstack server create \
 --key-name stanley01 \
 --image "CentOS-7-x86_64-GenericCloud-2009" \
@@ -22,7 +38,17 @@ openstack server create \
 --network mgmt_ts \
 --network pgw_ex \
 --wait \
-sas-viya-04
+sas-kafka-01
+
+openstack server create \
+--key-name stanley01 \
+--image "CentOS-7-x86_64-GenericCloud-2009" \
+--flavor sas.xlarge \
+--availability-zone regular \
+--network mgmt_ts \
+--network pgw_ex \
+--wait \
+sas-kafka-05
 
 k8s Nodes
 openstack server create \
@@ -33,4 +59,38 @@ openstack server create \
 --network mgmt_ts \
 --network pgw_ex \
 --wait \
-k8s-node-03
+k8s-node-08
+
+### k8s-node SR-IOV Port Create
+openstack port create --network mgmt_ts k8s-node-09_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-09_pgw_ex
+openstack port create --network mgmt_ts k8s-node-10_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-10_pgw_ex
+openstack port create --network mgmt_ts k8s-node-11_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-11_pgw_ex
+openstack port create --network mgmt_ts k8s-node-12_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-12_pgw_ex
+openstack port create --network mgmt_ts k8s-node-13_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-13_pgw_ex
+openstack port create --network mgmt_ts k8s-node-14_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-14_pgw_ex
+openstack port create --network mgmt_ts k8s-node-15_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-15_pgw_ex
+openstack port create --network mgmt_ts k8s-node-16_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-16_pgw_ex
+openstack port create --network mgmt_ts k8s-node-17_mgmt_ts 
+openstack port create --network pgw_ex --vnic-type direct --allowed-address ip-address=0.0.0.0/0 k8s-node-17_pgw_ex
+
+
+openstack server create \
+--key-name stanley01 \
+--image "k8s-image-01" \
+--flavor sas.xxlarge.sriov \
+--availability-zone sriov \
+--nic port-id=k8s-node-11_mgmt_ts \
+--nic port-id=k8s-node-11_pgw_ex \
+--user-data="/home/topduck/cloud-init.txt" \
+--config-drive True \
+--wait \
+k8s-node-11
+
