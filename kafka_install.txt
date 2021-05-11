@@ -1,0 +1,75 @@
+yum install -y java-1.8.0-openjdk wget
+java -version
+wget https://archive.apache.org/dist/kafka/2.7.0/kafka_2.12-2.7.0.tgz
+tar -xzf kafka_2.12-2.7.0.tgz
+mv kafka_2.12-2.7.0 /opt/kafka
+
+sed -e 's/broker.id=0/broker.id=6/' -i /opt/kafka/config/server.properties
+sed -e 's/#listeners=PLAINTEXT:\/\/:9092/listeners=PLAINTEXT:\/\/10.10.2.30:9092/' -i /opt/kafka/config/server.properties
+sed -e 's/log.dirs=\/tmp\/kafka-logs/log.dirs=\/mnt\/storage\/kafka\/sas-kafka-06/' -i /opt/kafka/config/server.properties
+sed -e 's/dataDir=\/tmp\/zookeeper/dataDir=\/mnt\/storage\/kafka\/sas-kafka-06/' -i /opt/kafka/config/zookeeper.properties
+sed -e 's/num.partitions=1/num.partitions=10/' -i /opt/kafka/config/server.properties
+echo "delete.topic.enable=true" | tee -a /opt/kafka/config/server.properties
+
+
+touch /opt/kafka/kafka_run.sh
+chmod +x /opt/kafka/kafka_run.sh
+
+tee -a /opt/kafka/kafka_run.sh << EOF
+#!/bin/bash
+LOGTIME=\$(date +%s)
+echo Starting Zookeeper 
+nohup /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties > \/mnt\/storage\/kafka\/sas-kafka-06/\${LOGTIME}zookeeper.log 2>&1 &
+echo Sleeping for 20 seconds...
+sleep 20
+echo Starting Broker
+nohup /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties > \/mnt\/storage\/kafka\/sas-kafka-06\/${LOGTIME}server.log 2>&1 &
+EOF
+
+#################  Networking  ########################################
+touch /etc/sysconfig/network-scripts/ifcfg-eth2
+
+tee -a /etc/sysconfig/network-scripts/ifcfg-eth2 << EOF
+# Created by cloud-init on instance boot automatically, do yest edit.
+#
+BOOTPROTO=none
+DEVICE=eth2
+HWADDR=fa:16:3e:4e:40:50
+MTU=1500
+ONBOOT=yes
+STARTMODE=auto
+TYPE=Ethernet
+USERCTL=yes
+IPADDR=10.12.0.91
+NETMASK=255.255.255.0
+DEFROUTE=no
+EOF
+
+systemctl restart network.service
+#######################################################################
+
+####################  Mount Storage  ##################################
+ping -c 1 10.12.0.13
+mkdir /mnt/storage
+mount -t nfs 10.12.0.13:/i-nfs-1/virt/kvm /mnt/storage
+mkdir /mnt/storage/kafka/k8s-node-08
+#######################################################################
+
+sed -e 's/\/tmp\//\/mnt\/storage\/kafka\/sas-kafka-06\//' -i /opt/kafka/kafka_run.sh
+sed -e 's/\/tmp\//\/mnt\/storage\/kafka\/sas-kafka-06\//' -i /opt/kafka/kafka_run.sh
+
+sudo /opt/kafka/kafka_run.sh
+
+ps -ef
+
+# create topics
+#cd KAFKA_DIR
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic syslog-data  --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic json-data --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic snmp-data --partitions 10 --replication-factor 1
+
+# check
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic syslog-data
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic json-data
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic snmp-data
