@@ -43,12 +43,12 @@ sas-kafka-01
 openstack server create \
 --key-name stanley01 \
 --image "CentOS-7-x86_64-GenericCloud-2009" \
---flavor sas.xlarge \
+--flavor m1.xlarge \
 --availability-zone regular \
 --network mgmt_ts \
 --network pgw_ex \
 --wait \
-sas-kafka-05
+sas-ssui-01
 
 k8s Nodes
 openstack server create \

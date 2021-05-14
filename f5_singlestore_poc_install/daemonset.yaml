@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: memsql-sysreq
+  labels:
+    "app.kubernetes.io/name": "memsql-sysreq"
+spec:
+  selector:
+    matchLabels:
+      "app.kubernetes.io/name": "memsql-sysreq"
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/name": "memsql-sysreq"
+    spec:
+      hostPID: true
+      volumes:
+      - name: sys
+        hostPath:
+          path: /sys
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: memsql-cluster
+            topologyKey: kubernetes.io/hostname
+
+      initContainers:
+      - name: sysreq
+        image: busybox
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: sys
+          mountPath: /rootfs/sys
+        command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          set -euxo pipefail
+          sysctl -w vm.max_map_count=1000000000
+          sysctl -w vm.min_free_kbytes=658096
+          echo never > /rootfs/sys/kernel/mm/transparent_hugepage/enabled
+          echo never > /rootfs/sys/kernel/mm/transparent_hugepage/defrag
+          echo 0 > /rootfs/sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+      containers:
+      - name: pause
+        image: gcr.io/google_containers/pause

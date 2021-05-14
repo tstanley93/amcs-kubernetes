@@ -64,12 +64,39 @@ ps -ef
 
 # create topics
 #cd KAFKA_DIR
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic syslog-data  --partitions 10 --replication-factor 1
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic json-data --partitions 10 --replication-factor 1
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic snmp-data --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic syslog-data  --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic json-data --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic snmp-data --partitions 10 --replication-factor 1
+
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic  --partitions 10 --replication-factor 1
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic2  --partitions 10 --replication-factor 1
 
 # check
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic syslog-data
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic json-data
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic snmp-data
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --list
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic syslog-data
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic json-data
+bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic snmp-data
+
+https://github.com/sassoftware/iot-esp-ha-using-kafka
+https://github.com/henriquedanc/camel-k-adapters/blob/main/ConfigureKafka.md
+https://github.com/henriquedanc/camel-k-adapters/blob/main/InstallKamel.md
+
+server.1=10.10.2.57:2888:3888
+server.2=10.10.2.31:2888:3888
+server.3=10.10.2.43:2888:3888
+server.4=10.10.2.49:2888:3888
+server.5=10.10.2.28:2888:3888
+server.6=10.10.2.30:2888:3888
+initLimit=20
+syncLimit=10
+
+sudo sed -e 's/zookeeper.connect\=localhost:2181/zookeeper.connect\=10.10.2.57:2181,10.10.2.31:2181,10.10.2.43:2181,10.10.2.49:2181,10.10.2.28:2181,10.10.2.30:2181/' -i /opt/kafka/config/server.properties
+zookeeper.connect=10.10.2.57:2181,10.10.2.31:2181,10.10.2.43:2181,10.10.2.49:2181,10.10.2.28:2181,10.10.2.30:2181
+
+touch /mnt/storage/kafka/sas-kafka-02/myid
+echo 2 > /mnt/storage/kafka/sas-kafka-02/myid
+cat /mnt/storage/kafka/sas-kafka-02/myid
+
+T1DraHTyTMWOYd3blK4G-A
+
+N-pLjpysRX6oaluPSEEL1A

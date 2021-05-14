@@ -11,7 +11,7 @@ k8s-master-01
 
 openstack server create \
 --key-name stanley01 \
---image "	k8s-image-01" \
+--image "k8s-image-01" \
 --flavor m1.xlarge \
 --network mgmt_ts \
 k8s-node-03
@@ -83,19 +83,19 @@ echo "10.10.2.56 k8s-node-16" | sudo tee -a /etc/hosts
 echo "10.10.2.29 k8s-node-17" | sudo tee -a /etc/hosts
 
 echo "network: {config: disabled}" | sudo tee -a /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
-sudo sed -e 's/no/yes/' -i /etc/sysconfig/network-scripts/ifcfg-eth1
-sudo sed -e 's/dhcp/none/' -i /etc/sysconfig/network-scripts/ifcfg-eth1
-echo "DNS1=172.27.1.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
-echo "DNS2=172.27.2.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
-echo "IPADDR=10.10.2.29" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
-echo "NETMASK=255.255.255.0" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
-echo "GATEWAY=10.10.2.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
-#####################################################################
 sudo sed -e 's/no/yes/' -i /etc/sysconfig/network-scripts/ifcfg-eth0
 sudo sed -e 's/dhcp/none/' -i /etc/sysconfig/network-scripts/ifcfg-eth0
-echo "IPADDR=192.168.2.104" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
-echo "NETMASK=255.255.254.0" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
-echo "DEFROUTE=no" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "DNS1=172.27.1.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "DNS2=172.27.2.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "IPADDR=10.10.2.46" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "NETMASK=255.255.255.0" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "GATEWAY=10.10.2.1" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth0
+#####################################################################
+sudo sed -e 's/no/yes/' -i /etc/sysconfig/network-scripts/ifcfg-eth1
+sudo sed -e 's/dhcp/none/' -i /etc/sysconfig/network-scripts/ifcfg-eth1
+echo "IPADDR=192.168.2.106" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
+echo "NETMASK=255.255.254.0" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
+echo "DEFROUTE=no" | sudo tee -a /etc/sysconfig/network-scripts/ifcfg-eth1
 sudo systemctl restart network.service
 ##########################################################################
 

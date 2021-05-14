@@ -1,0 +1,17 @@
+F5 SingleStore Install on k8s
+
+kubectl create -f daemonset.yaml
+kubectl create -f rbac.yaml
+kubectl create -f memsql-cluster-crd.yaml
+kubectl create -f deployment.yaml
+kubectl get pods
+kubectl create -f memsql-cluster.yaml
+kubectl get services
+
+
+SingleStore Studio Install
+
+sudo yum-config-manager --add-repo https://release.memsql.com/production/rpm/x86_64/repodata/memsql.repo
+sudo yum install -y singlestoredb-studio
+sudo systemctl start singlestoredb-studio
+sudo systemctl enable singlestoredb-studio.service
