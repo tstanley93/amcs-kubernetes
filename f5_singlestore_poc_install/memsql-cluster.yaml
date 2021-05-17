@@ -26,7 +26,7 @@ spec:
 
     objectMetaOverrides:
       annotations:
-        optional: annotation
+        volume.beta.kubernetes.io/storage-class: "standard"
       labels:
         optional: label
 
@@ -38,6 +38,7 @@ spec:
 
     objectMetaOverrides:
       annotations:
-        optional: annotation
+        volume.beta.kubernetes.io/storage-class: "standard"
+        #optional: annotation
       labels:
         optional: label

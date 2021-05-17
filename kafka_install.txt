@@ -64,18 +64,21 @@ ps -ef
 
 # create topics
 #cd KAFKA_DIR
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic syslog-data  --partitions 10 --replication-factor 1
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic json-data --partitions 10 --replication-factor 1
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic snmp-data --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic syslog-data  --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic json-data --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic snmp-data --partitions 10 --replication-factor 1
 
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic  --partitions 10 --replication-factor 1
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic2  --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic  --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic2  --partitions 10 --replication-factor 1
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --create --topic test-topic3  --partitions 10 --replication-factor 1
 
 # check
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --list
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic syslog-data
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic json-data
-bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic snmp-data
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --list
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic syslog-data
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic json-data
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server 10.10.2.57:9092 --describe --topic snmp-data
+
+/opt/kafka/bin/zookeeper-shell.sh 10.10.2.57:2181 ls /brokers/ids
 
 https://github.com/sassoftware/iot-esp-ha-using-kafka
 https://github.com/henriquedanc/camel-k-adapters/blob/main/ConfigureKafka.md
