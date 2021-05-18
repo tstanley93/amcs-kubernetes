@@ -1,6 +1,6 @@
 F5 SingleStore Install on k8s
 
-kubectl create -f daemonset.yaml
+#kubectl create -f daemonset.yaml
 kubectl create -f rbac.yaml
 kubectl create -f memsql-cluster-crd.yaml
 kubectl create -f deployment.yaml

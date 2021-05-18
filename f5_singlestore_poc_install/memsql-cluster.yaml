@@ -22,11 +22,11 @@ spec:
     count: 1
     height: 0.5
     storageGB: 256
-    storageClass: standard
+    storageClass: managed-nfs-storage
 
     objectMetaOverrides:
       annotations:
-        volume.beta.kubernetes.io/storage-class: "standard"
+      optional: annotation
       labels:
         optional: label
 
@@ -34,11 +34,13 @@ spec:
     count: 5
     height: 1
     storageGB: 2048
-    storageClass: standard
+    storageClass: managed-nfs-storage
 
     objectMetaOverrides:
       annotations:
-        volume.beta.kubernetes.io/storage-class: "standard"
-        #optional: annotation
+        optional: annotation
       labels:
         optional: label
+
+  globalVariables:
+    allow_unsupported_filesystem: "ON"
