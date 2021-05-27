@@ -1,0 +1,5 @@
+{"insecure-registries" : ["10.39.0.1:5000"]}
+
+echo '{"insecure-registries" : ["10.39.0.1:5000"]}' | sudo tee /etc/docker/daemon.json
+sudo systemctl restart docker
+sudo systemctl status docker

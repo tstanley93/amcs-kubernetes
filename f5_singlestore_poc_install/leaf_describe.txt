@@ -1,0 +1,109 @@
+Name:           node-memsql-cluster-leaf-ag1-0
+Namespace:      default
+Priority:       0
+Node:           <none>
+Labels:         app.kubernetes.io/component=leaf
+                app.kubernetes.io/instance=memsql-cluster
+                app.kubernetes.io/name=memsql-cluster
+                controller-revision-hash=node-memsql-cluster-leaf-ag1-6d974bbb97
+                memsql.com/availability-group=1
+                memsql.com/role-tier=leaf
+                optional=label
+                statefulset.kubernetes.io/pod-name=node-memsql-cluster-leaf-ag1-0
+Annotations:    hash.configmap.memsql.com/node-memsql-cluster-leaf-ag1: 713949fa425b90b32b71049a58de5730
+                hash.secret.memsql.com/memsql-cluster: a95dcec252e59b2cac9212c56015402a
+                optional: annotation
+                prometheus.io/port: 9104
+                prometheus.io/scrape: true
+Status:         Pending
+IP:             
+IPs:            <none>
+Controlled By:  StatefulSet/node-memsql-cluster-leaf-ag1
+Containers:
+  node:
+    Image:      memsql/node:centos-7.3.4-d596a2867a
+    Port:       <none>
+    Host Port:  <none>
+    Limits:
+      cpu:     8
+      memory:  32Gi
+    Requests:
+      cpu:      8
+      memory:   32Gi
+    Liveness:   exec [/etc/memsql/scripts/liveness-probe] delay=10s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  exec [/etc/memsql/scripts/readiness-probe] delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      RELEASE_ID:        
+      ROOT_PASSWORD:     <set to the key 'ROOT_PASSWORD' in secret 'memsql-cluster'>  Optional: false
+      PRE_START_SCRIPT:  /etc/memsql/scripts/update-config-script
+      MAXIMUM_MEMORY:    26214
+      MALLOC_ARENA_MAX:  8
+    Mounts:
+      /etc/memsql/extra from additional-files (rw)
+      /etc/memsql/extra-secret from additional-secrets (rw)
+      /etc/memsql/scripts from scripts (rw)
+      /etc/memsql/share from global-additional-files (rw)
+      /var/lib/memsql from pv-storage (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8pcrx (ro)
+  exporter:
+    Image:      memsql/node:centos-7.3.4-d596a2867a
+    Port:       9104/TCP
+    Host Port:  0/TCP
+    Command:
+      /etc/memsql/scripts/exporter-startup-script
+    Limits:
+      cpu:     100m
+      memory:  100Mi
+    Requests:
+      cpu:     100m
+      memory:  90Mi
+    Environment:
+      RELEASE_ID:        
+      DATA_SOURCE_NAME:  <set to the key 'DATA_SOURCE_NAME' in secret 'memsql-cluster'>  Optional: false
+    Mounts:
+      /etc/memsql/extra from additional-files (rw)
+      /etc/memsql/extra-secret from additional-secrets (rw)
+      /etc/memsql/scripts from scripts (rw)
+      /etc/memsql/share from global-additional-files (rw)
+      /var/lib/memsql from pv-storage (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8pcrx (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  pv-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  pv-storage-node-memsql-cluster-leaf-ag1-0
+    ReadOnly:   false
+  scripts:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      node-memsql-cluster-leaf-ag1
+    Optional:  false
+  additional-files:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      memsql-cluster-additional-files
+    Optional:  true
+  additional-secrets:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  memsql-cluster-additional-secrets
+    Optional:    true
+  global-additional-files:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      global-additional-files
+    Optional:  true
+  kube-api-access-8pcrx:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  28m   default-scheduler  0/16 nodes are available: 16 pod has unbound immediate PersistentVolumeClaims.
+  Warning  FailedScheduling  28m   default-scheduler  0/16 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 6 Insufficient cpu, 6 Insufficient memory, 9 node(s) had taint {network: fast}, that the pod didn't tolerate.
+  Warning  FailedScheduling  27m   default-scheduler  0/16 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 6 Insufficient cpu, 6 Insufficient memory, 9 node(s) had taint {network: fast}, that the pod didn't tolerate.

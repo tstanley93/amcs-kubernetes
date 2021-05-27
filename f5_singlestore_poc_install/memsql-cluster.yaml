@@ -3,7 +3,7 @@ kind: MemsqlCluster
 metadata:
   name: memsql-cluster
 spec:
-  license: BDljOTU3MzExNzliMzRkMWJiMmU3NGUyNjJkNDBiZDVm8MKgYAAAAAAAAAAAAAAAAAswNgIZAKO+ZjYznHGQcUrfn7XgwCb+fB+TrMmp2AIZALp6LNXSj5Sc+hc9a1h3BNztZlVAn7Ofew==
+  license: BGUyZmI4MGQyMWFmZDQzODRiMDA5ODg0ZDM4OGVjYTRkUMvOYAAAAAAAAAAAAAAAAAkwNgIZAOv9Pv4ssKIFFjjSY3rsBqxKHSvokCvC9AIZAOsPjtYC2YFW6cQpJJ7k+cBQFA+LIM+L3Q==
   adminHashedPassword: "*9269A7C3F1676FD03A16E6542322FF39235229C3"
   nodeImage:
     repository: memsql/node
@@ -22,7 +22,7 @@ spec:
     count: 1
     height: 0.5
     storageGB: 256
-    storageClass: managed-nfs-storage
+    storageClass: singlestore-nfs-storage
 
     objectMetaOverrides:
       annotations:
@@ -32,9 +32,9 @@ spec:
 
   leafSpec:
     count: 5
-    height: 1
+    height: 0.5
     storageGB: 2048
-    storageClass: managed-nfs-storage
+    storageClass: singlestore-nfs-storage
 
     objectMetaOverrides:
       annotations:

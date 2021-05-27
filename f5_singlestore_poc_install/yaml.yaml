@@ -1,0 +1,260 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    hash.configmap.memsql.com/node-memsql-cluster-master: da6ab453cec5a53857eb0526c83bb249
+    hash.secret.memsql.com/memsql-cluster: 09825ee9a9ddee95544ae1d36479eb08
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.44.0.0"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.44.0.0"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    prometheus.io/port: "9104"
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2021-05-19T20:44:01Z"
+  generateName: node-memsql-cluster-master-
+  labels:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: memsql-cluster
+    app.kubernetes.io/name: memsql-cluster
+    controller-revision-hash: node-memsql-cluster-master-bdd84ff66
+    memsql.com/role-tier: aggregator
+    optional: label
+    statefulset.kubernetes.io/pod-name: node-memsql-cluster-master-0
+  name: node-memsql-cluster-master-0
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: node-memsql-cluster-master
+    uid: edccb6f9-2cab-4100-8624-21aecf84abbf
+  resourceVersion: "3913895"
+  uid: f5ad88a8-54dc-4467-86a7-e7b544283592
+spec:
+  containers:
+  - env:
+    - name: RELEASE_ID
+    - name: ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: ROOT_PASSWORD
+          name: memsql-cluster
+    - name: PRE_START_SCRIPT
+      value: /etc/memsql/scripts/update-config-script
+    - name: MAXIMUM_MEMORY
+      value: "13107"
+    - name: MALLOC_ARENA_MAX
+      value: "4"
+    image: memsql/node:centos-7.3.4-d596a2867a
+    imagePullPolicy: Always
+    livenessProbe:
+      exec:
+        command:
+        - /etc/memsql/scripts/liveness-probe
+      failureThreshold: 3
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: node
+    readinessProbe:
+      exec:
+        command:
+        - /etc/memsql/scripts/readiness-probe
+      failureThreshold: 3
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "4"
+        memory: 16Gi
+      requests:
+        cpu: "4"
+        memory: 16Gi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/memsql
+      name: pv-storage
+    - mountPath: /etc/memsql/scripts
+      name: scripts
+    - mountPath: /etc/memsql/extra
+      name: additional-files
+    - mountPath: /etc/memsql/extra-secret
+      name: additional-secrets
+    - mountPath: /etc/memsql/share
+      name: global-additional-files
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-d94wl
+      readOnly: true
+  - command:
+    - /etc/memsql/scripts/exporter-startup-script
+    env:
+    - name: RELEASE_ID
+    - name: DATA_SOURCE_NAME
+      valueFrom:
+        secretKeyRef:
+          key: DATA_SOURCE_NAME
+          name: memsql-cluster
+    image: memsql/node:centos-7.3.4-d596a2867a
+    imagePullPolicy: Always
+    name: exporter
+    ports:
+    - containerPort: 9104
+      name: metrics
+      protocol: TCP
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 90Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/memsql
+      name: pv-storage
+    - mountPath: /etc/memsql/scripts
+      name: scripts
+    - mountPath: /etc/memsql/extra
+      name: additional-files
+    - mountPath: /etc/memsql/extra-secret
+      name: additional-secrets
+    - mountPath: /etc/memsql/share
+      name: global-additional-files
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-d94wl
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: node-memsql-cluster-master-0
+  nodeName: k8s-node-06
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  subdomain: svc-memsql-cluster
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: pv-storage
+    persistentVolumeClaim:
+      claimName: pv-storage-node-memsql-cluster-master-0
+  - configMap:
+      defaultMode: 493
+      name: node-memsql-cluster-master
+    name: scripts
+  - configMap:
+      defaultMode: 292
+      name: memsql-cluster-additional-files
+      optional: true
+    name: additional-files
+  - name: additional-secrets
+    secret:
+      defaultMode: 292
+      optional: true
+      secretName: memsql-cluster-additional-secrets
+  - configMap:
+      defaultMode: 292
+      name: global-additional-files
+      optional: true
+    name: global-additional-files
+  - name: kube-api-access-d94wl
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2021-05-19T20:44:02Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2021-05-19T20:44:02Z"
+    message: 'containers with unready status: [node]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2021-05-19T20:44:02Z"
+    message: 'containers with unready status: [node]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2021-05-19T20:44:02Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://eb07ac72f1f5ba5561176d430ccda63915d8cba158768a4f8c6cde83f2c42863
+    image: docker.io/memsql/node:centos-7.3.4-d596a2867a
+    imageID: docker-pullable://docker.io/memsql/node@sha256:767de4a822a79e5f34b608f74e75ea5b4234a3c9537e88367d4a1dc647ac3c86
+    lastState: {}
+    name: exporter
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2021-05-19T20:44:22Z"
+  - containerID: docker://f1c7fee1bbe0e92b76a9cfac65117c601516478c4667772a82f3275deae8e37c
+    image: docker.io/memsql/node:centos-7.3.4-d596a2867a
+    imageID: docker-pullable://docker.io/memsql/node@sha256:767de4a822a79e5f34b608f74e75ea5b4234a3c9537e88367d4a1dc647ac3c86
+    lastState: {}
+    name: node
+    ready: false
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2021-05-19T20:44:21Z"
+  hostIP: 10.10.2.42
+  phase: Running
+  podIP: 10.44.0.0
+  podIPs:
+  - ip: 10.44.0.0
+  qosClass: Burstable
+  startTime: "2021-05-19T20:44:02Z"
