@@ -1,0 +1,13 @@
+kamel run \
+-d mvn:javax.xml.bind:jaxb-api:2.3.1 \
+-d mvn:com.sun.xml.bind:jaxb-core:2.3.0.1 \
+-d mvn:com.sun.xml.bind:jaxb-impl:2.3.2 \
+-d camel-kafka \
+--trait affinity.enabled=false \
+--trait affinity.node-affinity-labels=netspeed=40g \
+--trait toleration.enabled=true \
+--trait toleration.taints="network=fast:NoSchedule" \
+--configmap=kafka-config \
+--trait jvm.options="-Xms5632m -Xmx5632m" \
+--trait container.request-cpu=4000m \
+--trait container.request-memory=6144Mi JsonSocket.java

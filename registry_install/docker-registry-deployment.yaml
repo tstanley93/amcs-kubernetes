@@ -22,9 +22,15 @@ spec:
             - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
               value: "/var/lib/registry"
             - name: REGISTRY_HTTP_TLS_CERTIFICATE
-              value: "/certs/registry.crt"
+              value: "/certs/registry.splab.pdsea.f5net.com.crt"
             - name: REGISTRY_HTTP_TLS_KEY
-              value: "/certs/registry.key"
+              value: "/certs/registry.splab.pdsea.f5net.com.key.pem"
+            - name: REGISTRY_AUTH
+              value: "htpasswd"
+            - name: REGISTRY_AUTH_HTPASSWD_REALM
+              value: "Registry Realm"
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: "/auth/htpasswd"
           ports:
           - name: http
             containerPort: 5000
@@ -33,6 +39,8 @@ spec:
             mountPath: "/var/lib/registry"
           - name: certs-vol
             mountPath: /certs
+          - name: auth
+            mountPath: /auth
       volumes:
         - name: image-store
           persistentVolumeClaim:
@@ -40,6 +48,10 @@ spec:
         - name: certs-vol
           hostPath:
             path: /mnt/storage/cert
+            type: Directory
+        - name: auth
+          hostPath:
+            path: /mnt/storage/cert/auth
             type: Directory
 
 ---
