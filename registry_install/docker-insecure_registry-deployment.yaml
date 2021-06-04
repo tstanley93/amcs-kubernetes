@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-insecure_registry
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-insecure_registry
+  template:
+    metadata:
+      labels:
+        app: docker-insecure_registry
+    spec:
+      containers:
+        - name: docker-insecure_registry
+          image: registry:latest
+          env:
+            - name: REGISTRY_HTTP_ADDR
+              value: ":5050"
+            - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+              value: "/var/lib/registry"
+          ports:
+          - name: http
+            containerPort: 5050
+          volumeMounts:
+          - name: image-store
+            mountPath: "/var/lib/registry"
+          - name: certs-vol
+            mountPath: /certs
+          - name: auth
+            mountPath: /auth
+      volumes:
+        - name: image-store
+          persistentVolumeClaim:
+            claimName: images-pv-claim
+        - name: certs-vol
+          hostPath:
+            path: /mnt/storage/cert
+            type: Directory
+        - name: auth
+          hostPath:
+            path: /mnt/storage/cert/auth
+            type: Directory
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker-insecure_registry
+  namespace: default
+  labels:
+    app: docker-insecure_registry
+spec:
+  selector:
+    app: docker-insecure_registry
+  type: NodePort
+  ports:
+  - name: http
+    port: 5050
+    targetPort: 5050
+    nodePort: 30080
