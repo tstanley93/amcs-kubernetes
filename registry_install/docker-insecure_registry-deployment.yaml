@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: docker-insecure_registry
+  name: docker-insecure-registry
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: docker-insecure_registry
+      app: docker-insecure-registry
   template:
     metadata:
       labels:
-        app: docker-insecure_registry
+        app: docker-insecure-registry
     spec:
       containers:
-        - name: docker-insecure_registry
+        - name: docker-insecure-registry
           image: registry:latest
           env:
             - name: REGISTRY_HTTP_ADDR
@@ -49,13 +49,13 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: docker-insecure_registry
+  name: docker-insecure-registry
   namespace: default
   labels:
-    app: docker-insecure_registry
+    app: docker-insecure-registry
 spec:
   selector:
-    app: docker-insecure_registry
+    app: docker-insecure-registry
   type: NodePort
   ports:
   - name: http
