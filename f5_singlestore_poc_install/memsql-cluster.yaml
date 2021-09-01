@@ -3,15 +3,16 @@ kind: MemsqlCluster
 metadata:
   name: memsql-cluster
 spec:
-  license: BGUyZmI4MGQyMWFmZDQzODRiMDA5ODg0ZDM4OGVjYTRkUMvOYAAAAAAAAAAAAAAAAAkwNgIZAOv9Pv4ssKIFFjjSY3rsBqxKHSvokCvC9AIZAOsPjtYC2YFW6cQpJJ7k+cBQFA+LIM+L3Q==
+  license: BDFhYjc4N2FjMTUxMTQ0MzY4NDMyZDlmOTI2MGQzOWQzYJzOYQAAAAAAAAAAAAAAAAswNAIYcJI83uo02d4z+e0M9Gs4mt8iYbEBnw9xAhhOTdGqDRQcZxkqa2B8f+vyNr0a7kz0S2cAAA==
   adminHashedPassword: "*9269A7C3F1676FD03A16E6542322FF39235229C3"
   nodeImage:
     repository: memsql/node
-    tag: centos-7.3.4-d596a2867a
+    tag: centos-7.5.8-12c73130aa
 
   redundancyLevel: 1
 
   serviceSpec:
+    type: NodePort
     objectMetaOverrides:
       labels:
         custom: label

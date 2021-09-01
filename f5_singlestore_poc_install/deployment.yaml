@@ -15,7 +15,7 @@ spec:
       serviceAccountName: memsql-operator
       containers:
         - name: memsql-operator
-          image: memsql/operator:1.2.4-8a8eb21f
+          image: memsql/operator:1.2.5-83e8133a
           imagePullPolicy: IfNotPresent
           args: [
             # Cause the operator to merge rather than replace annotations on services

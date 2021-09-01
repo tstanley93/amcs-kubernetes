@@ -1,0 +1,46 @@
+apiVersion: iot.sas.com/v1alpha1
+kind: ESPServer
+metadata:
+  name: syslog # give the service used to access the running project a name
+                  #     ingress is <name>.<namespace>.$ESP_DOMAIN  
+  namespace: espkube
+spec:
+  # Add fields here
+    replicas: 1        # 1 by default, if larger than 1, requires load_balance_policy
+    #failover: true  # if true, use Kafka for HA?
+    loadBalancePolicy: "kafka-hash" # in the future, we could add cluster-manager hash/round-robin...
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "2"
+      limits:
+        memory: "4Gi"
+        cpu: "4"
+    autoscale:
+      minReplicas: 1
+      maxReplicas: 1 
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 50
+    espProperties:
+      server.xml: "b64H4sIADcHFGEAA+1YXU/bMBR936/I/LRJlDT94EtpJTb2wAPTNNjDhFBl4pvUI4mN7UCrrf99N2nSJm1V5oImISEhkWv7HF/b5/re2pdK/ILAOClNYEDC/khPdSyikQFtiGPGCijTA9IljsxudXY7IDQzgjhjoMrcAjUtnhpQDzQeEI84PGUwGRDJR18uvl39JMN3juMnYCijhuZGaTqcDYg2GePih4wFZcA+TclQU80gEb6bj9k+nAy9g87RwXHX6x52+r1tkAvBeMj/eYZqeDVDr+31jvrdzZCYTkVmyPA3Ce49coL/EjmCCU1kDLk5ISct76C9R6b4cdSe7RGtgnKTF/39/ry/0+vPZrPlRPOvauv8QKTmPgPFQZduVC3T8vxyH+Zd2PmIhyEedWUvWlpaZCqAxYEalQEpCWrOLXGI1MEYElpvwkbcpJjpZmPVXPLBJBjTNIIRZ6imqcynMIqnEXHuYFrO7W6lCGnAY26mK/jtIA0PuE+WIKOtho+FNvmXFSgBrWlkh6FSWs+DcR2sb/oTvunIFoKDssBkCtgol+l2rO+uK8Z316WVyzrFS0moFXEtO5wgphrvpTsa3tFKvIUx4ilZcxl3Q4Iyi8DZ1FnFUL4CMvTfX38+O706vcYoubkZ+m416mkCHqVCQaAfJFUaQClcR40wl7wlI3IVO8cg5gnH67ZG98eSizKGdEIGgsHzvJozhTGN6svDtSc0tqQqTg4PV2cJqEiJTKIOl5yg5S6EeYBKoUyNyWvv419nv394ctw+7uxVdtdr2r3uin3ctDtHK/h2Ye/ipRGSBzUX59dvKw+nneia8sUTsmTJVLxh42IR0KL96XUuetbCzXcXAdy8AzYFvO820tV6GgtEIjOzOY/Vs/BbIntLZC+byFYPVohRfg1WIKyIu52dkx+WkyjrTQptwUSqZUhWeiqCsTbgaWQlKnuk0faYSl72yFJj9sBSaPbAUm07uFpIboejaOrOnuD86+XV9w8rNHtOLsrLs/Mz8tEZOu0ttL67LrjnFWDF76EXrMC0dQWGSQ/PA1tQ56l5XpWjUyr1WNRZQhprW5pXVJBg2Wq44SKtudnyXri0aRlFUx2+zgpnnTLNktssDFFxDJVXr4fb/7VWKmuixRuAu/II4AOL6jMVtjOvsBq//h1DVQSmWUm5S94aT+HS/Bli/mjReKcoVpg/MQ3/AuzQMx9sEgAA"
+      meta.meteringhost: "espmeter-service.espkube"
+      meta.meteringport: "80"
+    env:
+        # using ESPENV you may override any ESP config property, here we pass in our 
+        #    license (base64 encoded).
+    volumeMounts:
+        - mountPath: /mnt/data  # path persistent volume gets mounted to
+          name: data            # the volume specified below
+    volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: esp-pv
+access:
+  #operator will update these after the server is deployed
+  state: "Pending" 
+  internalHttpPort:  0

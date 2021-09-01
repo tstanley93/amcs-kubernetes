@@ -1,0 +1,33 @@
+# This came from instructions at https://kb.novaordis.com/index.php/Add_a_Zone_File_to_Kubernetes_CoreDNS
+
+kubectl -n kube-system get configmap coredns -o jsonpath='{.data.Corefile}' > ./Corefile
+
+#Edit Corefile to add extension
+file /etc/coredns/espkube.db espkube.sas-esp.splab.pdsea.f5net.com {
+      upstream
+    }
+	
+#Create file espkube.db .  Replace 10.x.x.x with the external IP address
+
+; espkube.sas-esp.splab.pdsea.f5net.com
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          SOA         sns.dns.icann.org.  noc.dns.icann.org. 2019101701 7200 3600 1209600 3600
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          NS          b.iana-servers.net.
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          NS          b.iana-servers.net.
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          A           10.xx.xx.xx
+*                                                        IN          CNAME       espkube.sas-esp.splab.pdsea.f5net.com.
+
+
+# Apply the update to coredns
+kubectl -n kube-system create configmap coredns --from-file=Corefile --from-file=espkube.db --save-config=true --dry-run -o yaml > coredns.yaml
+kubectl -n kube-system apply -f ./coredns.yaml
+
+# Update the volumes to point to the new espkube.db
+kubectl -n kube-system edit deployment coredns
+
+    - key: espkube.db
+      path: espkube.db
+
+# Scale up and scale down the coredns.  Set the number of replicas based on your config
+kubectl -n kube-system scale --replicas=0 deployment coredns
+kubectl -n kube-system scale --replicas=2 deployment coredns
+

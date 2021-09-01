@@ -1,0 +1,94 @@
+<project name="f5_syslog_test" threads="3" pubsub="auto" heartbeat-interval="1" index="pi_EMPTY">
+  <metadata>
+    <meta id="studioUploadedBy">sasdemo</meta>
+    <meta id="studioUploaded">1628693137254</meta>
+    <meta id="studioModifiedBy">sasdemo</meta>
+    <meta id="studioModified">1628694014853</meta>
+    <meta id="layout">{"cq1":{"cmp_example":{"x":-160,"y":-80},"src_syslog":{"x":-155,"y":-245}}}</meta>
+  </metadata>
+  <contqueries>
+    <contquery name="cq1">
+      <windows>
+        <window-source pubsub="true" name="src_syslog">
+          <schema>
+            <fields>
+              <field name="exchange_id" type="string" key="true"/>
+              <field name="facility" type="string"/>
+              <field name="severity" type="string"/>
+              <field name="ts" type="string"/>
+              <field name="hostname" type="string"/>
+              <field name="message" type="string"/>
+              <field name="appname" type="string"/>
+              <field name="proc_id" type="string"/>
+              <field name="msg_id" type="string"/>
+              <field name="structured_data" type="string"/>
+            </fields>
+          </schema>
+          <connectors>
+            <connector class="kafka" name="kafka_in">
+              <properties>
+                <property name="type"><![CDATA[pub]]></property>
+                <property name="ignorecsvparseerrors"><![CDATA[true]]></property>
+                <property name="csvfielddelimiter"><![CDATA[|]]></property>
+                <property name="addcsvopcode"><![CDATA[true]]></property>
+                <property name="addcsvflags"><![CDATA[normal]]></property>
+                <property name="kafkaconsumergroupid"><![CDATA[esp]]></property>
+                <property name="kafkahostport"><![CDATA[10.10.2.57:9092,10.10.2.31:9092,10.10.2.43:9092,10.10.2.49:9092,10.10.2.28:9092,10.10.2.30:9092]]></property>
+                <property name="kafkatopic"><![CDATA[syslog-data]]></property>
+                <property name="kafkatype"><![CDATA[csv]]></property>
+                <property name="urlhostport"><![CDATA[localhost:9092]]></property>
+              </properties>
+            </connector>
+          </connectors>
+        </window-source>
+        <window-compute pubsub="true" name="cmp_example">
+          <schema>
+            <fields>
+              <field name="exchange_id" type="string" key="true"/>
+              <field name="facility" type="string"/>
+              <field name="severity" type="string"/>
+              <field name="ts" type="string"/>
+              <field name="hostname" type="string"/>
+              <field name="message" type="string"/>
+              <field name="appname" type="string"/>
+              <field name="proc_id" type="string"/>
+              <field name="msg_id" type="string"/>
+              <field name="structured_data" type="string"/>
+              <field name="foo_flag" type="int32"/>
+            </fields>
+          </schema>
+          <output>
+            <field-expr><![CDATA[facility]]></field-expr>
+            <field-expr><![CDATA[severity]]></field-expr>
+            <field-expr><![CDATA[ts]]></field-expr>
+            <field-expr><![CDATA[hostname]]></field-expr>
+            <field-expr><![CDATA[message]]></field-expr>
+            <field-expr><![CDATA[appname]]></field-expr>
+            <field-expr><![CDATA[proc_id]]></field-expr>
+            <field-expr><![CDATA[msg_id]]></field-expr>
+            <field-expr><![CDATA[structured_data]]></field-expr>
+            <field-expr><![CDATA[INSTR(structured_data, "fooSDID") > 0]]></field-expr>
+          </output>
+          <connectors>
+            <connector class="kafka" name="kafka_out">
+              <properties>
+                <property name="type"><![CDATA[sub]]></property>
+                <property name="csvmsgperevent"><![CDATA[true]]></property>
+                <property name="snapshot"><![CDATA[false]]></property>
+                <property name="kafkahostport"><![CDATA[10.10.2.57:9092,10.10.2.31:9092,10.10.2.43:9092,10.10.2.49:9092,10.10.2.28:9092,10.10.2.30:9092]]></property>
+                <property name="kafkapartition"><![CDATA[-1]]></property>
+                <property name="kafkatopic"><![CDATA[syslog-data-transf]]></property>
+                <property name="kafkatype"><![CDATA[csv]]></property>
+                <property name="urlhostport"><![CDATA[localhost:9092]]></property>
+                <property name="numbufferedmsgs"><![CDATA[0]]></property>
+              </properties>
+            </connector>
+          </connectors>
+        </window-compute>
+      </windows>
+      <edges>
+        <edge source="src_syslog" target="cmp_example"/>
+      </edges>
+    </contquery>
+  </contqueries>
+</project>

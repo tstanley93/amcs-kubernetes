@@ -1,0 +1,6 @@
+; espkube.sas-esp.splab.pdsea.f5net.com
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          SOA         sns.dns.icann.org.  noc.dns.icann.org. 2019101701 7200 3600 1209600 3600
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          NS          b.iana-servers.net.
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          NS          b.iana-servers.net.
+espkube.sas-esp.splab.pdsea.f5net.com.                   IN          A           10.144.184.85
+*                                                        IN          CNAME       espkube.sas-esp.splab.pdsea.f5net.com.
