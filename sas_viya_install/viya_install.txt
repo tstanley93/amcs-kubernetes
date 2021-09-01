@@ -1,0 +1,6 @@
+ansible-playbook -i inventory.ini deploy-cleanup.yml
+ansible-playbook -vvv -i inventory.ini site.yml
+rm deployment.log
+/home/centos/sas_viya_playbook
+
+ldappasswd -s "Junct10n!!" -w "Junct10n!!" -D "cn=ldapadm,dc=viya,dc=splab.pdsea.f5net.com" -x "uid=sasadmin,ou=People,dc=viya,dc=splab.pdsea.f5net.com"
