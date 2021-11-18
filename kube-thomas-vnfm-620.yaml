@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: rstahl-test
+secrets:
+- name: default-token-bptkq
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:  
+  name: admin
+  namespace: rstahl-test
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: rstahl-test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudify-service
+  namespace: rstahl-test
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: cloudify
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudify-deployment
+  namespace: rstahl-test
+  labels:
+    app: cloudify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudify
+  template:
+    metadata:
+      labels:
+        app: cloudify
+    spec:
+      volumes:
+      - name: sys-fs-cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: cloudify-620
+        image: cloudifyplatform/premium-cloudify-manager-aio:6.2.0
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: sys-fs-cgroup
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 80
+        - containerPort: 5671
+        - containerPort: 53333
+        - containerPort: 8000

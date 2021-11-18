@@ -35,7 +35,7 @@ spec:
         runAsUser: 0
       containers:
       - name: centos
-        image: registry.splab.pdsea.f5net.com:5000/centos:latest
+        image: centos:latest
         command: ["/usr/sbin/init"]
         volumeMounts:
         - mountPath: /sys/fs/cgroup
