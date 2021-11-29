@@ -1,30 +1,28 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: default
-  namespace: rstahl-test
-secrets:
-- name: default-token-bptkq
+  name: sa-cloudify
+  namespace: ts-ns
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:  
   name: admin
-  namespace: rstahl-test
+  namespace: ts-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: admin
 subjects:
 - kind: ServiceAccount
-  name: default
-  namespace: rstahl-test
+  name: sa-cloudify
+  namespace: ts-ns
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cloudify-service
-  namespace: rstahl-test
+  namespace: ts-ns
 spec:
   ports:
   - protocol: TCP
@@ -38,7 +36,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cloudify-deployment
-  namespace: rstahl-test
+  namespace: ts-ns
   labels:
     app: cloudify
 spec:
