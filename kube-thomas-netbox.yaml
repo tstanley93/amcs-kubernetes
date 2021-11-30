@@ -1,31 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    run: netbox
   name: netbox
-  namespace: default
+  labels:
+    app: netbox
 spec:
   replicas: 2
   selector:
     matchLabels:
       run: netbox
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
   template:
     metadata:
       labels:
         run: netbox
     spec:
-      nodeSelector:
-        type: other      
       containers:
-      - image: quay.io/gravitational/netbox:latest
-        imagePullPolicy: Always
-        name: netbox
+      - name: ubuntu
+        image: tstanley933/ubuntu-netbox:latest
+        command: ["/bin/sleep", "3650d"]
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
       securityContext:
-        runAsUser: 0
-      terminationGracePeriodSeconds: 30
+            runAsUser: 0
