@@ -17,4 +17,7 @@ RUN apt install -y \
     iproute2 \
     curl \
     jq \
-    wget
+    wget \
+    openssh-client \
+    apache2 \
+    iperf
